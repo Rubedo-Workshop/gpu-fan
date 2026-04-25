@@ -1,0 +1,12 @@
+[Unit]
+Description=NVIDIA 980 Ti GPU Fan Curve
+After=graphical.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/gpu-fan.sh
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=graphical.target
