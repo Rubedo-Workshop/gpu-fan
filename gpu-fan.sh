@@ -5,6 +5,11 @@
 DISPLAY=:0
 UID_USER=1000
 
+# Exit cleanly if no NVIDIA GPU is present (e.g. eGPU not connected)
+if ! nvidia-smi > /dev/null 2>&1; then
+    exit 0
+fi
+
 # Wait for XWayland socket to be ready
 while ! [ -S /tmp/.X11-unix/X0 ]; do sleep 2; done
 
@@ -25,7 +30,8 @@ while true; do
 
     TEMP=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null)
 
-    if [ -z "$TEMP" ]; then
+    # Skip if TEMP is not a valid integer (handles nvidia-smi error output)
+    if [ -z "$TEMP" ] || ! [[ "$TEMP" =~ ^[0-9]+$ ]]; then
         sleep 5
         continue
     fi
